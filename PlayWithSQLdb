@@ -1,0 +1,56 @@
+import java.sql.*;
+import java.util.*;
+
+public class PlayWithDatabases {
+
+	public static Vector<String> inputParameters = new Vector();
+
+	public static void main(String [] args){
+		// acquire multiple input params from cmd line
+		for (int i = 0 ; i < args.length  ; i++ ){
+			System.out.println(args[i]);
+			inputParameters.addElement(args[i]);
+		}
+
+		ConnectToDatabase();
+	}
+
+public static void ConnectToDatabase(){
+      Connection c = null;
+      Statement stmt = null;
+      String s; 
+      try {
+         Class.forName("org.sqlite.JDBC");
+         c = DriverManager.getConnection("jdbc:sqlite:Names.db");
+         System.out.println("Opened database successfully");
+
+         stmt = c.createStatement();
+         for (int j = 0; j<inputParameters.size(); j++){
+
+         		s= inputParameters.elementAt(j).toString();
+				System.out.println(s);
+        	 	String sql = "insert into names (name) values ('" + s + "')"; 
+        	 	stmt.executeUpdate(sql);
+		}
+         stmt.close();
+         	
+		System.out.println("Database contents:");
+		Statement stmt2 = null;
+		stmt2 = c.createStatement();
+		String sql = "select * from names";
+		ResultSet result = stmt2.executeQuery(sql);
+
+		while (result.next()){
+		    String name = result.getString(1);
+		    System.out.println(name);
+		}
+
+		stmt2.close();
+		//  https://www.codejava.net/java-se/jdbc/jdbc-tutorial-sql-insert-select-update-and-delete-examples
+      	c.close(); 
+      } catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+      }
+   }
+} 
