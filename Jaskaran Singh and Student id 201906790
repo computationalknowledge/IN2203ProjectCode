@@ -1,0 +1,201 @@
+package LionTiger;
+
+import java.util.Random;
+
+class Feline {
+
+	public float strength;
+	public void setStrength() {
+		Random rand  = new Random();
+		this.strength  = rand.nextInt(100); // random set strength 
+			
+	}
+	
+	public float getStrength() {
+		return this.strength;
+		
+		
+	}
+}
+
+package LionTiger;
+
+import java.util.Scanner;
+
+public class First {
+
+	
+		public static void main(String[] args) {
+			Storage storage = new Storage();
+			Jungle jungle = new Jungle();
+			
+					
+					storage.createTable();   
+					
+					 
+					 	jungle.RunGame();  // call run game
+						jungle.DoCompetition(); // call do function 
+						jungle.RepoteOnWinner();  // call report winner
+						
+				storage.insert(jungle.NumberOfLIONWinners, jungle.NumberOfTigerWinners);		// insert data to data base 
+				 
+			       System.out.println("Total Wins Summary");
+   
+
+			        System.out.println("lion" + "\t" + "tiger");  // headings
+			   
+					 
+					storage.Results();  // fetch result from database
+		
+
+	}
+}
+
+package LionTiger;
+
+
+
+class Jungle {
+	
+	static Lion[] lions;
+	static Tiger[] tigers;
+	
+	public static int NumberOfLIONWinners = 0;
+	public static int NumberOfTigerWinners = 0;
+	
+	public static void RunGame(){
+		
+		lions = new Lion[10];
+		tigers = new Tiger[10];		
+		for (int i =0;i<10;i++) {
+			
+			lions[i] = new Lion();   // array of objects of lion
+			tigers[i] = new Tiger();  // array of objects of tiger
+			
+		}	
+	}
+  
+  package LionTiger;
+
+import java.util.Random;
+
+
+public class Lion extends Feline {
+	
+	public Lion() {
+		
+		setStrength();  // function to set strength 
+	}
+	
+	
+	public void setStrength() {
+		Random rand  = new Random();
+		this.strength  = rand.nextInt(100);  // randomm strength
+			
+	}
+
+
+}
+
+package LionTiger;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Storage{
+	
+	//  String route = "C:\\Freeman SA.db";
+	    static Connection c = null;
+	    static Statement stat = null;
+	    static String op;
+//constructor to create connnection	    
+public Storage() {
+
+try {
+Class.forName("org.sqlite.JDBC");
+c = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/Result.db");
+System.out.println(c);
+
+} catch ( Exception e ) {
+System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+
+System.exit(0);
+}
+
+}
+
+
+public void insert(int lion, int tiger) {
+	
+		
+
+try {
+    stat = c.createStatement();
+    String sql = "INSERT INTO Summary(lionWins,tigerWins) VALUES('"+lion+"','"+tiger+"')";
+    stat.execute(sql);       
+    stat.close();
+    System.err.println("Data inserted successfully");
+}
+catch (SQLException e) {
+    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+}
+
+}
+
+
+public void Results() {
+
+try {
+    stat = c.createStatement();
+    String sql =  "SELECT * FROM Summary";
+    ResultSet rs    = stat.executeQuery(sql);   
+    while (rs.next()) {
+        System.out.println( rs.getInt("lionWins") + "\t" +
+                           rs.getInt("tigerWins"));
+    }
+    
+    stat.close();
+  
+}
+catch (SQLException e) {
+    System.out.println(e.getMessage());}}
+
+public void createTable() {
+
+try {
+    stat = c.createStatement();
+    String sql = "CREATE TABLE IF NOT EXISTS Summary (\n" + "lionWins int NOT NULL,\n"  + " tigerWins int not null \n"  + ");";  
+    stat.execute(sql);       
+    stat.close();
+}
+catch (SQLException e) {
+    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+}
+}
+
+
+}
+
+package LionTiger;
+
+import java.util.Random;
+
+
+
+public class Tiger extends Feline {
+
+public Tiger() {
+		
+		setStrength(); // function to set strength 
+	}
+		
+	public void setStrength() {
+		Random rand  = new Random();   // random strength set
+		this.strength  = rand.nextInt(100);
+			
+	}
+	
+}
